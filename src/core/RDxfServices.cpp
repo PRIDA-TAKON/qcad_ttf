@@ -621,25 +621,32 @@ QString RDxfServices::fixFontName(const QString& fontName) const {
         ret.replace(".shx", "", Qt::CaseInsensitive);
     }
 
+    QString lower = ret.toLower();
+
+    // Map common AutoCAD Thai fonts to Windows TTF:
+    if (lower == "thai" || lower == "thai1" || lower == "ktt" || lower == "tmsb" || lower == "tmse") {
+        return "TH Sarabun New";
+    }
+
     // CSS in QTextEdit cannot handle a font called "normal":
-    if (ret.toLower()=="normal") {
+    if (lower == "normal") {
         return "Standard";
     }
 
     // txt is an a*cad font
-    if (ret.toLower()=="txt") {
+    if (lower == "txt") {
         return "Standard";
     }
 
-    if (ret.toLower()=="standard") {
+    if (lower == "standard") {
         return "Standard";
     }
 
-    if (getVersion2Compatibility() && ret.toLower()=="courier") {
+    if (getVersion2Compatibility() && lower == "courier") {
         return "CourierCad";
     }
 
-    if (ret=="") {
+    if (ret == "") {
         return "Standard";
     }
 

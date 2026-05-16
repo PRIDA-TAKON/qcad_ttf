@@ -1642,7 +1642,7 @@ QString RDxfImporter::getEncoding(const QString& str) {
         return "IBM 850";
     } else if (l=="ibm 866") {
         return "IBM 866";
-    } else if (l=="cp874") {
+    } else if (l=="cp874" || l=="ansi_874" || l=="thai") {
         return "CP874";
     } else if (l=="cp1250") {
         return "CP1250";

@@ -119,6 +119,16 @@ bool RFontList::isCadFont(const QString& fontName, const QString& fontFile) {
 
 QStringList RFontList::getNames() {
     QStringList ret = res.getNames();
+
+    QFontDatabase db;
+    QStringList systemFonts = db.families();
+    for (int i=0; i<systemFonts.size(); ++i) {
+        QString systemFont = systemFonts.at(i);
+        if (!RS::listContainsCaseInsensitive(ret, systemFont)) {
+            ret.append(systemFont);
+        }
+    }
+
     qSort(ret.begin(), ret.end());
     return ret;
 }

@@ -1897,6 +1897,11 @@ QList<RPainterPath> RTextRenderer::getPainterPathsForBlockTtf(
     QTextLayout* layout = new QTextLayout();
     layout->setCacheEnabled(true);
 
+    QTextOption option;
+    option.setWrapMode(QTextOption::NoWrap);
+    option.setFlags(QTextOption::IncludeTrailingSpaces | QTextOption::ShowTabsAndSpaces);
+    layout->setTextOption(option);
+
     layout->setFont(font);
     layout->setText(blockText);
 #if (QT_VERSION >= QT_VERSION_CHECK(5,6,0))
