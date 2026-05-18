@@ -315,7 +315,7 @@ else {
 
 CONFIG += c++11
 
-QT += concurrent
+QT += concurrent gui
 
 NAME = $${RLIBNAME}core
 TARGET = $${NAME}
