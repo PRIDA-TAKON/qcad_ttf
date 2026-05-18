@@ -231,4 +231,10 @@ win32 {
     DEFINES += ON_COMPILING_OPENNURBS NDEBUG
     #LIBS += -lRpcrt4 -lAdvapi32
     LIBS += -luser32 -lgdi32
+
+    win32-msvc* {
+        # workaround for Internal Compiler Error in opennurbs_lookup.cpp with MSVC 2022:
+        QMAKE_CXXFLAGS_RELEASE -= -O2
+        QMAKE_CXXFLAGS_RELEASE += -O1
+    }
 }
