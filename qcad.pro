@@ -4,7 +4,7 @@ TEMPLATE = subdirs
 SUBDIRS = \
     src
 
-!r_ci {
+!contains(CONFIG, r_ci) {
     win32 {
         dirs = $$system("dir /B ..\* | findstr qcad..*")
         for (dir, $$list($$dirs)) {

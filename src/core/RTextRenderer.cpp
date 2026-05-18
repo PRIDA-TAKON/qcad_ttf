@@ -19,6 +19,7 @@
 #include <QFont>
 #include <QFontMetricsF>
 #include <QMutex>
+#include <QTextOption>
 
 #include "RColor.h"
 #include "RDxfServices.h"

@@ -18,6 +18,7 @@
  */
 #include <QFileInfo>
 #include <QFontDatabase>
+#include <QCoreApplication>
 
 #include "RS.h"
 #include "RFontList.h"
