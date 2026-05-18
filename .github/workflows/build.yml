@@ -23,7 +23,7 @@ jobs:
           version: '5.15.2'
           host: 'linux'
           target: 'desktop'
-          modules: 'qtscript qtsvg qtxmlpatterns qthelp'
+          modules: 'qtscript'
 
       - name: Install Dependencies
         run: |
@@ -71,7 +71,7 @@ jobs:
           host: 'windows'
           target: 'desktop'
           arch: 'win64_msvc2019_64'
-          modules: 'qtscript qtsvg qtxmlpatterns qthelp'
+          modules: 'qtscript'
 
       - name: Build QCAD
         shell: cmd
