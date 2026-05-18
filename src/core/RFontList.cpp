@@ -125,7 +125,7 @@ QStringList RFontList::getNames() {
     QStringList systemFonts = db.families();
     for (int i=0; i<systemFonts.size(); ++i) {
         QString systemFont = systemFonts.at(i);
-        if (!RS::listContainsCaseInsensitive(ret, systemFont)) {
+        if (!ret.contains(systemFont, Qt::CaseInsensitive)) {
             ret.append(systemFont);
         }
     }
