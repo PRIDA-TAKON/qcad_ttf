@@ -234,7 +234,8 @@ win32 {
 
     win32-msvc* {
         # workaround for Internal Compiler Error in opennurbs_lookup.cpp with MSVC 2022:
+        # completely disabling optimization for this legacy module
         QMAKE_CXXFLAGS_RELEASE -= -O2
-        QMAKE_CXXFLAGS_RELEASE += -O1
+        QMAKE_CXXFLAGS_RELEASE += -Od
     }
 }
