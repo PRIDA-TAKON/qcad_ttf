@@ -129,7 +129,7 @@ QStringList RFontList::getNames() {
         }
     }
 
-    qSort(ret.begin(), ret.end());
+    ret.sort();
     return ret;
 }
 

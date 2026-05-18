@@ -31,7 +31,7 @@ jobs:
           sudo apt-get install -y build-essential libgl1-mesa-dev libglu1-mesa-dev libfreetype6-dev libfontconfig1-dev libxrender-dev libx11-dev libxext-dev libxkbcommon-x11-dev libasound2-dev libpulse-dev libicu-dev
 
       - name: Configure (qmake)
-        run: qmake -r qcad.pro CONFIG+=release "SUBDIRS=src"
+        run: qmake -r qcad.pro CONFIG+=release CONFIG+=r_ci
 
       - name: Compile
         run: make -j$(nproc)
@@ -76,16 +76,13 @@ jobs:
       - name: Build QCAD
         shell: cmd
         run: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-          qmake -r qcad.pro CONFIG+=release "SUBDIRS=src"
-          nmake
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && qmake -r qcad.pro CONFIG+=release CONFIG+=r_ci && nmake
 
       - name: Deploy Qt Dependencies (Windows)
         shell: cmd
         run: |
-          mkdir qcad-windows
-          copy release\qcad.exe qcad-windows\
-          windeployqt --release qcad-windows\qcad.exe
+          if not exist qcad-windows mkdir qcad-windows
+          copy release\qcad.exe qcad-windows\ && windeployqt --release qcad-windows\qcad.exe
 
       - name: Prepare Artifact
         shell: pwsh
