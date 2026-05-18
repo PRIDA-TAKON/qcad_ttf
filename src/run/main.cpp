@@ -17,6 +17,7 @@
  * along with QCAD.
  */
 #include <stdio.h>
+#include <locale.h>
 
 #include <QApplication>
 #include <QDebug>
