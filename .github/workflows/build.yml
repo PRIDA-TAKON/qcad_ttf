@@ -1,0 +1,111 @@
+name: Build QCAD
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build-linux:
+    name: Build Linux
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: '5.15.2'
+          host: 'linux'
+          target: 'desktop'
+          modules: 'qtscript qtsvg qtxmlpatterns qthelp'
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libgl1-mesa-dev libglu1-mesa-dev libfreetype6-dev libfontconfig1-dev libxrender-dev libx11-dev libxext-dev libxkbcommon-x11-dev libasound2-dev libpulse-dev libicu-dev
+
+      - name: Configure (qmake)
+        run: qmake -r qcad.pro CONFIG+=release
+
+      - name: Compile
+        run: make -j$(nproc)
+
+      - name: Prepare Artifact
+        run: |
+          mkdir -p qcad-linux
+          if [ -d "release" ]; then
+            cp -r release/* qcad-linux/
+          fi
+          cp -r scripts fonts patterns linetypes libraries themes examples qcad-linux/
+          cp *.so qcad-linux/ 2>/dev/null || true
+          find qcad-linux -name "*.o" -delete
+          find qcad-linux -name "*.cpp" -delete
+          find qcad-linux -name "*.h" -delete
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: qcad-linux-x64
+          path: qcad-linux/
+
+  build-windows:
+    name: Build Windows
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: '5.15.2'
+          host: 'windows'
+          target: 'desktop'
+          arch: 'win64_msvc2019_64'
+          modules: 'qtscript qtsvg qtxmlpatterns qthelp'
+
+      - name: Build QCAD
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          qmake -r qcad.pro CONFIG+=release
+          nmake
+
+      - name: Deploy Qt Dependencies (Windows)
+        shell: cmd
+        run: |
+          mkdir qcad-windows
+          copy release\qcad.exe qcad-windows\
+          windeployqt --release qcad-windows\qcad.exe
+
+      - name: Prepare Artifact
+        shell: pwsh
+        run: |
+          if (Test-Path "release") {
+              # Copy all other built dlls and plugins from release
+              Get-ChildItem -Path "release" -Filter "*.dll" | Copy-Item -Destination "qcad-windows" -Force
+          }
+          # Copy resource folders
+          $resources = @("scripts", "fonts", "patterns", "linetypes", "libraries", "themes", "examples")
+          foreach ($res in $resources) {
+              if (Test-Path $res) {
+                  Copy-Item -Path $res -Destination "qcad-windows" -Recurse -Force
+              }
+          }
+          # Clean up unneeded files
+          Get-ChildItem -Path "qcad-windows" -Include "*.obj", "*.cpp", "*.h", "*.exp", "*.lib" -Recurse | Remove-Item -Force
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: qcad-windows-portable-x64
+          path: qcad-windows/
