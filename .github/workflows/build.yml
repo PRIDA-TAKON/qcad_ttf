@@ -88,7 +88,7 @@ jobs:
         run: |
           if not exist qcad-windows mkdir qcad-windows
           copy release\qcad.exe qcad-windows\
-          windeployqt --release --compiler-runtime qcad-windows\qcad.exe
+          windeployqt --release --compiler-runtime --xml --xmlpatterns --network --script --scripttools --svg --opengl --printsupport --designer --help qcad-windows\qcad.exe
 
       - name: Prepare Artifact
         shell: pwsh
