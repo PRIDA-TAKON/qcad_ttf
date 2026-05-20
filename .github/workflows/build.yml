@@ -42,6 +42,9 @@ jobs:
           if [ -d "release" ]; then
             cp -r release/* qcad-linux/
           fi
+          if [ -d "plugins" ]; then
+            cp -r plugins qcad-linux/
+          fi
           cp -r scripts fonts patterns linetypes libraries themes examples qcad-linux/
           cp *.so qcad-linux/ 2>/dev/null || true
           find qcad-linux -name "*.o" -delete
@@ -85,7 +88,7 @@ jobs:
         run: |
           if not exist qcad-windows mkdir qcad-windows
           copy release\qcad.exe qcad-windows\
-          windeployqt --release qcad-windows\qcad.exe
+          windeployqt --release --compiler-runtime qcad-windows\qcad.exe
 
       - name: Prepare Artifact
         shell: pwsh
@@ -93,6 +96,10 @@ jobs:
           if (Test-Path "release") {
               # Copy all other built dlls and plugins from release
               Get-ChildItem -Path "release" -Filter "*.dll" | Copy-Item -Destination "qcad-windows" -Force
+          }
+          if (Test-Path "plugins") {
+              # Copy QCAD built plugins
+              Copy-Item -Path "plugins" -Destination "qcad-windows" -Recurse -Force
           }
           # Copy resource folders
           $resources = @("scripts", "fonts", "patterns", "linetypes", "libraries", "themes", "examples")
