@@ -83,18 +83,17 @@ jobs:
           qmake -r qcad.pro CONFIG+=release CONFIG+=r_ci
           nmake
 
-      - name: Deploy Qt Dependencies (Windows)
-        shell: cmd
-        run: |
-          if not exist qcad-windows mkdir qcad-windows
-          copy release\qcad.exe qcad-windows\
-          windeployqt --release --compiler-runtime --xml --xmlpatterns --network --script --scripttools --svg --opengl --printsupport --designer --help qcad-windows\qcad.exe
-
-      - name: Prepare Artifact
+      - name: Prepare Deployment Directory
         shell: pwsh
         run: |
+          if (!(Test-Path "qcad-windows")) {
+              New-Item -ItemType Directory -Path "qcad-windows"
+          }
+          if (Test-Path "release\qcad.exe") {
+              Copy-Item -Path "release\qcad.exe" -Destination "qcad-windows" -Force
+          }
           if (Test-Path "release") {
-              # Copy all other built dlls and plugins from release
+              # Copy all other built dlls from release
               Get-ChildItem -Path "release" -Filter "*.dll" | Copy-Item -Destination "qcad-windows" -Force
           }
           if (Test-Path "plugins") {
@@ -108,7 +107,15 @@ jobs:
                   Copy-Item -Path $res -Destination "qcad-windows" -Recurse -Force
               }
           }
-          # Clean up unneeded files
+
+      - name: Deploy Qt Dependencies (Windows)
+        shell: cmd
+        run: |
+          windeployqt --release --compiler-runtime --xml --xmlpatterns --network --script --scripttools --svg --opengl --printsupport --designer --sql qcad-windows\qcad.exe
+
+      - name: Clean up unneeded files
+        shell: pwsh
+        run: |
           Get-ChildItem -Path "qcad-windows" -Include "*.obj", "*.cpp", "*.h", "*.exp", "*.lib" -Recurse | Remove-Item -Force
 
       - name: Upload Artifact
